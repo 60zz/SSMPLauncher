@@ -211,8 +211,8 @@ checking = "Verificando Notícias"
 
 [js.landing.discord]
 loading = "Carregando jogo.."
-joining = "Viajante despertando na cidade de Nattura"
-joined = "Explorando a cidade de Nattura"
+joining = "Arrumando as malas para explorar Abyss"
+joined = "Explorando o reino de Abyss!"
 
 [js.overlay]
 dismiss = "Dispensar"
