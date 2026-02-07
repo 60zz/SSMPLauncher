@@ -5,10 +5,10 @@ title = "SSMP Launcher"
 
 [ejs.landing]
 mediaGitHubURL = "https://github.com/BONEE4/SSMPauncher"
-mediaTwitterURL = "https://x.com/VLMPSMP/"
-mediaInstagramURL = "https://www.tiktok.com/@vlmp.smp"
+mediaTwitterURL = "https://x.com/SSMP_ABYSS/"
+mediaInstagramURL = "https://www.tiktok.com/@ssmp.abyss"
 mediaYouTubeURL = "https://www.youtube.com/channel/UC6ACK0XVNBqBovHI7394zqg"
-mediaDiscordURL = "https://discord.gg/vlmp"
+mediaDiscordURL = "https://discord.gg/ssmp"
 
 [ejs.settings]
 sourceGithubLink = "https://github.com/BONEE4/SSMPLauncher"

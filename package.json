@@ -2,12 +2,12 @@
     "name": "ssmplauncher",
     "version": "0.0.1",
     "productName": "SSMP Launcher",
-    "description": "Official Laucnher For SSMP server",
+    "description": "Official Launcher For SSMP server",
     "author": "BONEE (https://github.com/BONEE4/)",
     "license": "UNLICENSED",
     "homepage": "https://github.com/BONEE4/SSMPLauncher",
     "bugs": {
-        "url": "https://discord.gg/vlmp"
+        "url": "https://discord.gg/ssmp"
     },
     "private": true,
     "main": "index.js",

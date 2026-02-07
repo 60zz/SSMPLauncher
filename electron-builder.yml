@@ -32,8 +32,8 @@ linux:
   target: 'AppImage'
   maintainer: 'BONEE'
   vendor: 'BONEE'
-  synopsis: 'SSMP Launcherr'
-  description: 'Oficial Laucnher SSMP minecraft server'
+  synopsis: 'SSMP Launcher'
+  description: 'Oficial Launcher SSMP minecraft server'
   category: 'Game'
 
 
