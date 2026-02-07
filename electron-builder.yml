@@ -1,0 +1,42 @@
+appId: 'SSMP Launcher'
+productName: 'SSMP Launcher'
+artifactName: '${productName}-setup-${version}.${ext}'
+
+copyright: 'Copyright © 2025-2025 BONEE'
+
+asar: true
+compression: 'maximum'
+
+files:
+  - '!{dist,.gitignore,.vscode,docs,dev-app-update.yml,.nvmrc,.eslintrc.json}'
+
+extraResources:
+  - 'libraries'
+  - 'lang'
+
+# Windows Configuration
+win: 
+  target: 
+    - target: 'nsis'
+      arch: 'x64'
+
+# Windows Installer Configuration
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+
+# Linux Configuration
+linux: 
+  target: 'AppImage'
+  maintainer: 'BONEE'
+  vendor: 'BONEE'
+  synopsis: 'SSMP Launcherr'
+  description: 'Oficial Laucnher SSMP minecraft server'
+  category: 'Game'
+
+
+directories:
+  buildResources: 'build'
+  output: 'dist'

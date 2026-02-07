@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link type="text/css" rel="stylesheet" href="./assets/css/launcher.css">
+    <meta charset="utf-8" http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-In6B8teKZQll5heMl9bS7CESTbGvuAt3VVV86BUQBDk='"/>
+    <title><%= lang('app.title') %></title>
+    <script src="./assets/js/scripts/uicore.js"></script>
+    <script src="./assets/js/scripts/uibinder.js"></script>
+    <style>
+        body {
+            background: url('https://ssmp.luninha.dev/backgrounds/<%=bkid%>.jpg') no-repeat center center fixed;
+            transition: background-image 2s ease;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAAA/CAIAAAC3jNulAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAl0lEQVR4nO3QMQEAMBADoTb+Rb8JxkMCf9uL0yZWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKFYoVihWKHaumACEcmCFzgAAAABJRU5ErkJggg==');
+            background-size: cover;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        #main {
+            display: none;
+            height: calc(100% - 22px);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);
+            width: 100%;
+            position: absolute;
+            z-index: 10;
+        }
+        #main[overlay] {
+            filter: blur(3px) contrast(0.9) brightness(1.0);
+        }
+    </style>
+</head>
+<body bkid="<%=bkid%>">
+    <%- include('frame') %>
+    <div id="main">
+        <%- include('welcome') %>
+        <%- include('login') %>
+        <%- include('waiting') %>
+        <%- include('loginOptions') %>
+        <%- include('settings') %>
+        <%- include('landing') %>
+    </div>
+    <%- include('overlay') %>
+    <div id="loadingContainer">
+        <div id="loadingContent">
+            <div id="loadSpinnerContainer">
+                <img id="loadCenterImage" src="assets/images/Loading.png">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

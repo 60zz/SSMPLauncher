@@ -1,0 +1,25 @@
+# Custom Language File for Launcher Customizer
+
+[ejs.app]
+title = "SSMP Launcher"
+
+[ejs.landing]
+mediaGitHubURL = "https://github.com/BONEE4/SSMPauncher"
+mediaTwitterURL = "https://x.com/VLMPSMP/"
+mediaInstagramURL = "https://www.tiktok.com/@vlmp.smp"
+mediaYouTubeURL = "https://www.youtube.com/channel/UC6ACK0XVNBqBovHI7394zqg"
+mediaDiscordURL = "https://discord.gg/vlmp"
+
+[ejs.settings]
+sourceGithubLink = "https://github.com/BONEE4/SSMPLauncher"
+supportLink = "https://github.com/BONEE4/SSMPLauncher/issues"
+selectLanguage = "Select a Language"
+changeLanguageTitle = "Change the launcher language"
+changeLanguageDesc = "You can change the language in the list below. This text will not change if you change the language so you can find your wayback here to change it back"
+
+[ejs.welcome]
+welcomeHeader = "BEM VINDO AO SSMP"
+welcomeDescription = "Muito bem vindo, caro Viajante. Eu serei o seu novo anfitrião por aqui. Desde cedo gostaria de avisar que estou feliz em recebê-lo aqui nesse dia tão incrível! Esperamos que possa aproveitar essa aventura com todo amor e carinho. Desejo uma boa sorte na sua aventura!"
+
+[ejs.overlay]
+changedLanguageHeader = "You changed the previous language"
