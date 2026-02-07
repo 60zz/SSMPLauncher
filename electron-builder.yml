@@ -2,7 +2,7 @@ appId: 'SSMP Launcher'
 productName: 'SSMP Launcher'
 artifactName: '${productName}-setup-${version}.${ext}'
 
-copyright: 'Copyright © 2025-2025 BONEE'
+copyright: 'Copyright © 2025-2025 60zz'
 
 asar: true
 compression: 'maximum'
@@ -30,8 +30,8 @@ nsis:
 # Linux Configuration
 linux: 
   target: 'AppImage'
-  maintainer: 'BONEE'
-  vendor: 'BONEE'
+  maintainer: '60zz'
+  vendor: '60zz'
   synopsis: 'SSMP Launcher'
   description: 'Oficial Launcher SSMP minecraft server'
   category: 'Game'

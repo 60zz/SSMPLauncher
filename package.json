@@ -3,9 +3,9 @@
     "version": "0.0.1",
     "productName": "SSMP Launcher",
     "description": "Official Launcher For SSMP server",
-    "author": "BONEE (https://github.com/BONEE4/)",
+    "author": "60zz (https://github.com/60zz)",
     "license": "UNLICENSED",
-    "homepage": "https://github.com/BONEE4/SSMPLauncher",
+    "homepage": "https://github.com/60zz/SSMPLauncher",
     "bugs": {
         "url": "https://discord.gg/ssmp"
     },
@@ -46,7 +46,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/BONEE4/SSMPLauncher.git"
+        "url": "git+https://github.com/60zz/SSMPLauncher.git"
     },
     "pnpm": {
         "onlyBuiltDependencies": [
