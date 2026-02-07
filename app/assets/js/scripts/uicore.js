@@ -6,7 +6,6 @@
  */
 // Requirements
 const $                              = require('jquery')
-const {ipcRenderer, shell, webFrame, Notification } = require('electron')
 const remote                         = require('@electron/remote')
 const isDev                          = require('./assets/js/isdev')
 const { LoggerUtil }                 = require('hasta-core')
@@ -41,16 +40,14 @@ if(!isDev){
     ipcRenderer.on('autoUpdateNotification', (event, arg, info) => {
         switch(arg){
             case 'checking-for-update':
-                new Notification({ body: 'Nova atualização', title: 'NOVO UPDATE HEHE' }).show()
                 loggerAutoUpdater.info('Checking for update..')
                 settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkingForUpdateButton'), true)
                 break
             case 'update-available':
-                new Notification({ body: 'Nova atualização', title: 'NOVO UPDATE HEHE' }).show()
                 loggerAutoUpdater.info('New update available', info.version)
                 
                 if(process.platform === 'darwin'){
-                    info.darwindownload = `https://github.com/BONEE4/SSMP/releases/download/v${info.version}/SSMP-Launcher-setup-${info.version}${process.arch === 'arm64' ? '-arm64' : '-x64'}.dmg`
+                    info.darwindownload = `https://github.com/60zz/SSMP/releases/download/v${info.version}/SSMP-Launcher-setup-${info.version}${process.arch === 'arm64' ? '-arm64' : '-x64'}.dmg`
                     showUpdateUI(info)
                 }
                 
