@@ -1,0 +1,15 @@
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="35.34 34.3575 70.68 68.71500">
+    <title>website</title>
+    <g>
+        <!-- Globo/Mundo -->
+        <circle cx="70.68" cy="68.73" r="17" fill="none" stroke="currentColor" stroke-width="2"/>
+        
+        <!-- Linhas horizontais do globo -->
+        <line x1="53.68" y1="68.73" x2="87.68" y2="68.73" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M 56 58 Q 70.68 56 85.36 58" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M 56 79.5 Q 70.68 81.5 85.36 79.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        
+        <!-- Linhas verticais do globo -->
+        <ellipse cx="70.68" cy="68.73" rx="6" ry="17" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </g>
+</svg>
