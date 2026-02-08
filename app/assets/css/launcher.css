@@ -3323,6 +3323,15 @@ input:checked+.toggleSwitchSlider:before {
     fill: #1b8dd4;
 }
 
+/* Website icon colors. */
+#websiteSVG:hover,
+#websiteURL:focus #websiteSVG {
+    fill: #7667ce;
+}
+
+#websiteSVG:active {
+    fill: #7667ce;
+}
 
 
 /* Youtube icon colors. */
