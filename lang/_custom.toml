@@ -9,7 +9,7 @@ mediaTwitterURL = "https://x.com/SSMP_ABYSS/"
 mediaInstagramURL = "https://www.tiktok.com/@ssmp.abyss"
 mediaYouTubeURL = "https://www.youtube.com/channel/UC6ACK0XVNBqBovHI7394zqg"
 mediaDiscordURL = "https://discord.gg/ssmp"
-mediaWebsiteURL = "https://ssmp.minecart.com.br"
+mediaWebsiteURL = "https://ssmp.loja.redmc.com.br"
 
 [ejs.settings]
 sourceGithubLink = "https://github.com/60zz/SSMPLauncher"
