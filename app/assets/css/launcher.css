@@ -3324,13 +3324,18 @@ input:checked+.toggleSwitchSlider:before {
 }
 
 /* Website icon colors. */
+#websiteSVG {
+    stroke: #ffffff;
+    fill: none;
+}
+
 #websiteSVG:hover,
 #websiteURL:focus #websiteSVG {
-    fill: #7667ce;
+    stroke: #7667ce;
 }
 
 #websiteSVG:active {
-    fill: #7667ce;
+    stroke: #7667ce;
 }
 
 
