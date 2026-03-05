@@ -136,6 +136,8 @@ server = "Official Discord"
 [js.index]
 microsoftLoginTitle = "Microsoft Login"
 microsoftLogoutTitle = "Microsoft Logout"
+updateAvailableTitle = "Update Available"
+updateAvailableBody = "A new version of the launcher is available. Please update to get the best experience and newest features!"
 
 [js.login]
 login = "LOGIN"

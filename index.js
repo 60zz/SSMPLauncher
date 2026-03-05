@@ -2,7 +2,7 @@ const remoteMain = require('@electron/remote/main')
 remoteMain.initialize()
 
 // Requirements
-const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu, shell, Notification } = require('electron')
 const autoUpdater                       = require('electron-updater').autoUpdater
 const ejse                              = require('ejs-electron')
 const isDev                             = require('./app/assets/js/isdev')
@@ -33,6 +33,11 @@ function initAutoUpdater(event, data) {
         autoUpdater.autoDownload = false
     }
     autoUpdater.on('update-available', (info) => {
+        new Notification({
+            title: LangLoader.queryJS('index.updateAvailableTitle'),
+            body: LangLoader.queryJS('index.updateAvailableBody'),
+            icon: './build/icon.png'
+        }).show()
         event.sender.send('autoUpdateNotification', 'update-available', info)
     })
     autoUpdater.on('update-downloaded', (info) => {
@@ -251,7 +256,7 @@ function createWindow() {
 
     win.removeMenu()
 
-    win.resizable = false
+    win.resizable = true
 
     win.on('closed', () => {
         win = null
@@ -340,6 +345,7 @@ function getPlatformIcon(filename){
 
 app.on('ready', createWindow)
 app.on('ready', createMenu)
+app.setAppUserModelId('SSMP Launcher')
 
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar

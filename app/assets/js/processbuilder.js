@@ -46,7 +46,7 @@ class ProcessBuilder {
     /**
      * Convienence method to run the functions typically used to build a process.
      */
-    build(){
+    build() {
         fs.ensureDirSync(this.gameDir)
         const tempNativePath = path.join(os.tmpdir(), ConfigManager.getTempNativeFolder(), crypto.pseudoRandomBytes(16).toString('hex'))
         process.throwDeprecation = true
@@ -66,6 +66,8 @@ class ProcessBuilder {
         }
         
         const uberModArr = modObj.fMods.concat(modObj.lMods)
+        logger.info('[ANTI-CHEAT] - Starting scan for unauthorized mods...')
+        this._cleanUnauthorizedMods(uberModArr)
         let args = this.constructJVMArguments(uberModArr, tempNativePath)
 
         if(mcVersionAtLeast('1.13', this.server.rawServer.minecraftVersion)){
@@ -610,7 +612,7 @@ class ProcessBuilder {
                             val = args[i].replace(argDiscovery, tempNativePath)
                             break
                         case 'launcher_name':
-                            val = args[i].replace(argDiscovery, 'HastaStudioslauncher')
+                            val = args[i].replace(argDiscovery, 'SSMPlauncher')
                             break
                         case 'launcher_version':
                             val = args[i].replace(argDiscovery, this.launcherVersion)
@@ -976,6 +978,44 @@ class ProcessBuilder {
             }
         }
         return libs
+    }
+
+    /**
+     * Verifica a pasta local de mods da instância e deleta qualquer arquivo
+     * que não esteja na lista de módulos aprovados pelo servidor.
+     * * @param {Array.<Object>} enabledMods Lista de todos os mods aprovados e habilitados.
+     */
+    _cleanUnauthorizedMods(enabledMods) {
+        const modsDir = path.join(this.gameDir, 'mods')
+        
+        // Se a pasta mods não existir, não há nada para limpar
+        if (!fs.existsSync(modsDir)) {
+            return
+        }
+
+        // Mapeia apenas os nomes de arquivo dos mods oficiais esperados
+        // Utilizamos path.basename para extrair apenas o nome (ex: "jei-1.20.1.jar") do caminho completo
+        const expectedFileNames = enabledMods.map(mdl => path.basename(mdl.getPath()))
+
+        // Lê todos os arquivos que o jogador colocou dentro da pasta mods
+        const actualFiles = fs.readdirSync(modsDir)
+
+        for (const file of actualFiles) {
+            const filePath = path.join(modsDir, file)
+            
+            // Garantimos que estamos lidando com arquivos e não pastas
+            if (fs.statSync(filePath).isFile()) {
+                // A REGRA DE OURO: Se o arquivo na pasta NÃO está na lista oficial, delete!
+                if (!expectedFileNames.includes(file)) {
+                    logger.warn(`[ANTI-CHEAT] - Invalid mod detected and deleted: ${file}`)
+                    try {
+                        fs.unlinkSync(filePath)
+                    } catch (err) {
+                        logger.error(`[ANTI-CHEAT] Failed to delete unauthorized mod ${file}:`, err)
+                    }
+                }
+            }
+        }
     }
 
 }
