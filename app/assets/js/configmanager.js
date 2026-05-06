@@ -13,6 +13,10 @@ const dataPath = path.join(sysRoot, '.ssmplauncher')
 
 const launcherDir = app.getPath('userData')
 
+function getLanguageDirectory() {
+    return isDev ? path.join(process.cwd(), 'lang') : path.join(process.resourcesPath, 'lang')
+}
+
 /**
  * Retrieve the absolute path of the launcher directory.
  * 
@@ -179,6 +183,9 @@ function validateKeySet(srcObj, destObj){
     if(srcObj == null){
         srcObj = {}
     }
+    if(destObj == null || typeof destObj !== 'object' || destObj instanceof Array){
+        destObj = {}
+    }
     const validationBlacklist = ['authenticationDatabase', 'javaConfig']
     const keys = Object.keys(srcObj)
     for(let i=0; i<keys.length; i++){
@@ -298,7 +305,7 @@ exports.addAuthAccount = function(uuid, accessToken, username, displayName){
  * @returns {string} The ID of the selected serverpack.
  */
 exports.getSelectedServer = function(def = false){
-    return !def ? config.selectedServer : DEFAULT_CONFIG.clientToken
+    return !def ? config.selectedServer : DEFAULT_CONFIG.selectedServer
 }
 
 /**
@@ -881,36 +888,17 @@ exports.setLanguage = function(lang){
  * 
  * sorry for this shtty code LMAO
  * 
- * @param {function} callback
+* @param {function} callback
  */
 exports.getAllLanguages = function(callback) {
-    if(isDev){
-        fs.readdir(path.join(process.cwd(), 'lang'), (err, files) => {
-            if (err) {
-                callback(err)
-            } else {
-                const fileNames = files.map(file => file.replace('.toml', ''))
-                callback(null, fileNames)
-            }
-        })
-    } else {
-        if(process.platform === 'darwin'){
-            fs.readdir(path.join(process.cwd(), 'Content', 'Resources', 'lang'), (err, files) => {
-                if (err) {
-                    callback(err)
-                } else {
-                    const fileNames = files.map(file => file.replace('.toml', ''))
-                    callback(null, fileNames)
-                }
-            })
+    fs.readdir(getLanguageDirectory(), (err, files) => {
+        if (err) {
+            callback(err)
         } else {
-            fs.readdir(path.join(process.cwd(), 'Resources', 'lang'), (err, files) => {
-                if (err) {
-                    callback(err)
-                } else {
-                    const fileNames = files.map(file => file.replace('.toml', ''))
-                    callback(null, fileNames)
-                }
-            })
-        }}
+            const fileNames = files
+                .filter(file => path.extname(file) === '.toml')
+                .map(file => path.basename(file, '.toml'))
+            callback(null, fileNames)
+        }
+    })
 }

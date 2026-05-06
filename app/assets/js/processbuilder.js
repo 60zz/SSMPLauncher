@@ -11,6 +11,7 @@ const remote = require('@electron/remote')
 const win = remote.getCurrentWindow()
 
 const ConfigManager            = require('./configmanager')
+const DistroManager            = require('./distromanager')
 
 const logger = LoggerUtil.getLogger('ProcessBuilder')
 
@@ -34,6 +35,7 @@ class ProcessBuilder {
         this.authUser = authUser
         this.launcherVersion = launcherVersion
         this.forgeModListFile = path.join(this.gameDir, 'forgeMods.list') // 1.13+
+        this.modStoreDir = DistroManager.getInstanceModStoreDirectory(distroServer.rawServer.id)
         this.fmlDir = path.join(this.gameDir, 'forgeModList.json')
         this.llDir = path.join(this.gameDir, 'liteloaderModList.json')
         this.libPath = path.join(this.commonDir, 'libraries')
@@ -258,7 +260,7 @@ class ProcessBuilder {
      */
     constructJSONModList(type, mods, save = false){
         const modList = {
-            repositoryRoot: ((type === 'forge' && this._requiresAbsolute()) ? 'absolute:' : '') + path.join(this.commonDir, 'modstore')
+            repositoryRoot: ((type === 'forge' && this._requiresAbsolute()) ? 'absolute:' : '') + this.modStoreDir
         }
 
         const ids = []
@@ -298,7 +300,7 @@ class ProcessBuilder {
                 `@${this.forgeModListFile}`
             ] : [
                 '--fml.mavenRoots',
-                path.join('..', '..', 'common', 'modstore'),
+                this.modStoreDir,
                 '--fml.modLists',
                 this.forgeModListFile
             ]

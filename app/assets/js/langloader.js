@@ -9,6 +9,10 @@ const defaultLang = 'pt_BR'
 let config = null
 let lang
 
+function getLanguageDirectory() {
+    return isDev ? path.join(process.cwd(), 'lang') : path.join(process.resourcesPath, 'lang')
+}
+
 /**
  * Languages are now a resource
  * this detects the environment of the launcher (if it's dev, if it's a MacOS release or a Windows/Ubuntu release) and applies the directory in any case
@@ -18,28 +22,23 @@ let lang
  */
 
 exports.loadLanguage = function(id){
-    if(isDev){
-        lang = merge(lang || {}, toml.parse(fs.readFileSync(path.join(process.cwd(), 'lang', `${id}.toml`))) || {})
-    } else {
-        if(process.platform === 'darwin'){
-            // eslint-disable-next-line no-undef
-            lang = merge(lang || {}, toml.parse(fs.readFileSync(path.join(appPath, 'Contents', 'Resources', 'lang', `${id}.toml`))) || {})
-        } else {
-            lang = merge(lang || {}, toml.parse(fs.readFileSync(path.join(process.cwd(), 'resources', 'lang', `${id}.toml`))) || {})
-        }
-    }
+    const langPath = path.join(getLanguageDirectory(), `${id}.toml`)
+    lang = merge(lang || {}, toml.parse(fs.readFileSync(langPath, 'UTF-8')) || {})
 }
 
 exports.query = function(id, placeHolders){
-    let query = id.split('.')
+    const query = id.split('.')
     let res = lang
-    for(let q of query){
+    for(const q of query){
+        if(res == null || typeof res !== 'object' || !Object.prototype.hasOwnProperty.call(res, q)){
+            return ''
+        }
         res = res[q]
     }
-    let text = res === lang ? '' : res
-    if (placeHolders) {
+    let text = typeof res === 'string' ? res : ''
+    if (placeHolders && text) {
         Object.entries(placeHolders).forEach(([key, value]) => {
-            text = text.replace(`{${key}}`, value)
+            text = text.replaceAll(`{${key}}`, value)
         })
     }
     return text
@@ -54,25 +53,23 @@ exports.queryEJS = function(id, placeHolders){
 }
 
 function getLang(dir) {
-    // ! Yuck, this is sketchy
-    if(dir){
-        try{
-            config = JSON.parse(fs.readFileSync(dir, 'UTF-8'))
-            if(config.settings.launcher.language == undefined) {
-                config.settings.launcher.language = defaultLang
-            }
-            return config.settings.launcher.language
-        } catch (err){
-            return defaultLang
-        }
+    if(!dir){
+        return defaultLang
+    }
+
+    try{
+        config = JSON.parse(fs.readFileSync(dir, 'UTF-8'))
+        return config?.settings?.launcher?.language || defaultLang
+    } catch (err){
+        return defaultLang
     }
 }
 
 exports.setupLanguage = function(dir){
     // Load Language Files and check for conflict with CM
-    slectedLang = getLang(dir)
-    if(slectedLang) {
-        exports.loadLanguage(slectedLang)
+    const selectedLang = getLang(dir)
+    if(selectedLang) {
+        exports.loadLanguage(selectedLang)
         // Load Custom Language File for Launcher Customizer
         exports.loadLanguage('_custom')
     }
