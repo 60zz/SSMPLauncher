@@ -30,6 +30,7 @@ const {
 // Internal Requirements
 const DiscordWrapper          = require('./assets/js/discordwrapper')
 const ProcessBuilder          = require('./assets/js/processbuilder')
+const DistroManager           = require('./assets/js/distromanager')
 
 // Launch Elements
 const launch_content          = document.getElementById('launch_content')
@@ -478,6 +479,7 @@ async function dlAsync(login = true) {
     setLaunchDetails(Lang.queryJS('landing.dlAsync.validatingFileIntegrity'))
     let invalidFileCount = 0
     try {
+        await DistroManager.prepareLegacyModStoreForValidation(distro, serv.rawServer.id)
         invalidFileCount = await fullRepairModule.verifyFiles(percent => {
             setLaunchPercentage(percent)
         })
@@ -505,6 +507,14 @@ async function dlAsync(login = true) {
         }
     } else {
         loggerLaunchSuite.info('No invalid files, skipping download.')
+    }
+
+    try {
+        await DistroManager.materializeInstanceModStore(distro, serv.rawServer.id)
+    } catch(err) {
+        loggerLaunchSuite.error('Error while preparing instance modstore.', err)
+        showLaunchFailure(Lang.queryJS('landing.dlAsync.errorDuringFileDownloadTitle'), Lang.queryJS('landing.dlAsync.seeConsoleForDetails'))
+        return
     }
 
     // Remove download bar.

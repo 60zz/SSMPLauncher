@@ -23,6 +23,76 @@ function getInstanceModStoreDirectory(serverId){
     return path.join(ConfigManager.getInstanceDirectory(), serverId, LEGACY_COMMON_MODSTORE)
 }
 
+function getLegacyModStoreDirectory(){
+    return path.join(ConfigManager.getCommonDirectory(), LEGACY_COMMON_MODSTORE)
+}
+
+function getLegacyModPath(instanceModPath, serverId){
+    const relativePath = path.relative(getInstanceModStoreDirectory(serverId), instanceModPath)
+    return path.join(getLegacyModStoreDirectory(), relativePath)
+}
+
+function getServerModStoreModules(distribution, serverId){
+    const server = distribution?.getServerById(serverId)
+    const modules = []
+
+    function collect(mods){
+        for(const module of mods){
+            if(module.rawModule.type === Type.ForgeMod || module.rawModule.type === Type.LiteMod){
+                modules.push(module)
+            }
+
+            if(module.hasSubModules()){
+                collect(module.subModules)
+            }
+        }
+    }
+
+    if(server != null){
+        collect(server.modules)
+    }
+
+    return modules
+}
+
+async function linkOrCopyFile(from, to){
+    await fs.ensureDir(path.dirname(to))
+    try {
+        await fs.link(from, to)
+    } catch {
+        await fs.copy(from, to, { overwrite: true })
+    }
+}
+
+async function prepareLegacyModStoreForValidation(distribution, serverId){
+    for(const module of getServerModStoreModules(distribution, serverId)){
+        const instancePath = module.getPath()
+        const legacyPath = getLegacyModPath(instancePath, serverId)
+
+        if(await fs.pathExists(instancePath) && !await fs.pathExists(legacyPath)){
+            await linkOrCopyFile(instancePath, legacyPath)
+        }
+    }
+}
+
+async function materializeInstanceModStore(distribution, serverId){
+    for(const module of getServerModStoreModules(distribution, serverId)){
+        const instancePath = module.getPath()
+        const legacyPath = getLegacyModPath(instancePath, serverId)
+
+        if(await fs.pathExists(legacyPath)){
+            if(!await fs.pathExists(instancePath)){
+                await fs.ensureDir(path.dirname(instancePath))
+                await fs.move(legacyPath, instancePath, { overwrite: true })
+            } else {
+                await fs.remove(legacyPath)
+            }
+        }
+    }
+
+    await cleanLegacyCommonModStore()
+}
+
 function relocateModuleModStorePaths(modules, serverId){
     for(const module of modules){
         if(module.rawModule.type === Type.ForgeMod || module.rawModule.type === Type.LiteMod){
@@ -60,9 +130,7 @@ async function cleanLegacyCommonModStore(){
 
 const refreshDistributionOrFallback = api.refreshDistributionOrFallback.bind(api)
 api.refreshDistributionOrFallback = async function(){
-    const distribution = useInstanceModStores(await refreshDistributionOrFallback())
-    cleanLegacyCommonModStore()
-    return distribution
+    return useInstanceModStores(await refreshDistributionOrFallback())
 }
 
 const getDistribution = api.getDistribution.bind(api)
@@ -76,5 +144,7 @@ api.getDistributionLocalLoadOnly = async function(){
 }
 
 exports.getInstanceModStoreDirectory = getInstanceModStoreDirectory
+exports.prepareLegacyModStoreForValidation = prepareLegacyModStoreForValidation
+exports.materializeInstanceModStore = materializeInstanceModStore
 exports.cleanLegacyCommonModStore = cleanLegacyCommonModStore
 exports.DistroAPI = api
