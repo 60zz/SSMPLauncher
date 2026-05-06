@@ -93,11 +93,27 @@ async function materializeInstanceModStore(distribution, serverId){
     await cleanLegacyCommonModStore()
 }
 
+function isPathInside(parent, child){
+    const relativePath = path.relative(parent, child)
+    return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath))
+}
+
+function getModulePathRelativeToModStore(module, serverId){
+    const modulePath = module.getPath()
+    const instanceRoot = getInstanceModStoreDirectory(serverId)
+
+    if(isPathInside(instanceRoot, modulePath)){
+        return path.relative(instanceRoot, modulePath)
+    }
+
+    const legacyRoot = getLegacyModStoreDirectory()
+    return path.relative(legacyRoot, modulePath)
+}
+
 function relocateModuleModStorePaths(modules, serverId){
     for(const module of modules){
         if(module.rawModule.type === Type.ForgeMod || module.rawModule.type === Type.LiteMod){
-            const legacyRoot = path.join(ConfigManager.getCommonDirectory(), LEGACY_COMMON_MODSTORE)
-            const relativePath = path.relative(legacyRoot, module.getPath())
+            const relativePath = getModulePathRelativeToModStore(module, serverId)
             module.localPath = path.join(getInstanceModStoreDirectory(serverId), relativePath)
         }
 
