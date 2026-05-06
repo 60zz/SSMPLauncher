@@ -45,6 +45,11 @@ class ProcessBuilder {
         this.llPath = null
     }
     
+    getModStoreMavenRoot(){
+        const relativePath = path.relative(this.gameDir, this.modStoreDir)
+        return relativePath || '.'
+    }
+
     /**
      * Convienence method to run the functions typically used to build a process.
      */
@@ -300,7 +305,7 @@ class ProcessBuilder {
                 `@${this.forgeModListFile}`
             ] : [
                 '--fml.mavenRoots',
-                this.modStoreDir,
+                this.getModStoreMavenRoot(),
                 '--fml.modLists',
                 this.forgeModListFile
             ]
