@@ -18,6 +18,27 @@ const api = new DistributionAPI(
 )
 
 const LEGACY_COMMON_MODSTORE = 'modstore'
+const DISTRO_CACHE_TTL_MS = 30 * 60 * 1000
+const DISTRO_REFRESH_JITTER_MS = 5000
+
+let distroRefreshPromise = null
+
+function wait(ms){
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function isDistributionCacheFresh(){
+    if(api.isDevMode()){
+        return false
+    }
+
+    try {
+        const stat = await fs.stat(api.distroPath)
+        return Date.now() - stat.mtimeMs < DISTRO_CACHE_TTL_MS
+    } catch {
+        return false
+    }
+}
 
 function getInstanceModStoreDirectory(serverId){
     return path.join(ConfigManager.getInstanceDirectory(), serverId, LEGACY_COMMON_MODSTORE)
@@ -146,11 +167,32 @@ async function cleanLegacyCommonModStore(){
 
 const refreshDistributionOrFallback = api.refreshDistributionOrFallback.bind(api)
 api.refreshDistributionOrFallback = async function(){
-    return useInstanceModStores(await refreshDistributionOrFallback())
+    if(await isDistributionCacheFresh()){
+        return this.getDistribution()
+    }
+
+    if(distroRefreshPromise == null){
+        distroRefreshPromise = (async () => {
+            await wait(Math.floor(Math.random() * DISTRO_REFRESH_JITTER_MS))
+            return useInstanceModStores(await refreshDistributionOrFallback())
+        })().finally(() => {
+            distroRefreshPromise = null
+        })
+    }
+
+    return distroRefreshPromise
 }
 
 const getDistribution = api.getDistribution.bind(api)
 api.getDistribution = async function(){
+        if(this.rawDistribution == null && await isDistributionCacheFresh()){
+        try {
+            return useInstanceModStores(await this.getDistributionLocalLoadOnly())
+        } catch {
+            // Cache exists but is unreadable; fall back to the normal remote/local path.
+        }
+    }
+
     return useInstanceModStores(await getDistribution())
 }
 

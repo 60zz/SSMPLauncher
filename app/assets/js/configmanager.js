@@ -545,8 +545,6 @@ function defaultJavaConfig8(ram) {
         maxRAM: resolveSelectedRAM(ram),
         executable: null,
         jvmOptions: [
-            '-XX:+UseConcMarkSweepGC',
-            '-XX:+CMSIncrementalMode',
             '-XX:-UseAdaptiveSizePolicy',
             '-Xmn128M'
         ],
@@ -659,8 +657,14 @@ exports.setJavaExecutable = function(serverid, executable){
  * @param {string} serverid The server id.
  * @returns {Array.<string>} An array of the additional arguments for JVM initialization.
  */
+
+const REMOVED_JVM_OPTIONS = new Set([
+    '-XX:+UseConcMarkSweepGC',
+    '-XX:+CMSIncrementalMode'
+])
+
 exports.getJVMOptions = function(serverid){
-    return config.javaConfig[serverid].jvmOptions
+    return config.javaConfig[serverid].jvmOptions.filter(option => !REMOVED_JVM_OPTIONS.has(option))
 }
 
 /**
