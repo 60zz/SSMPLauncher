@@ -75,6 +75,7 @@ function refreshDistributionInBackground(){
 DistroAPI.getDistributionLocalLoadOnly()
     .then(heliosDistro => {
         logger.info('Loaded cached distribution index.')
+        onDistroLoad(heliosDistro)
         refreshDistributionInBackground()
     })
     .catch(localErr => {
