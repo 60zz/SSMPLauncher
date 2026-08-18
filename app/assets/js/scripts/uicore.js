@@ -36,13 +36,29 @@ webFrame.setZoomLevel(0)
 webFrame.setVisualZoomLevelLimits(1, 1)
 
 // Initialize auto updates in production environments.
+function hasUpdateSettingsHandlers(){
+    return typeof settingsUpdateButtonStatus === 'function' && typeof populateSettingsUpdateInformation === 'function'
+}
+
+function safeSettingsUpdateButtonStatus(...args){
+    if(hasUpdateSettingsHandlers()){
+        settingsUpdateButtonStatus(...args)
+    }
+}
+
+function safePopulateSettingsUpdateInformation(...args){
+    if(hasUpdateSettingsHandlers()){
+        populateSettingsUpdateInformation(...args)
+    }
+}
+
 let updateCheckListener
 if(!isDev){
     ipcRenderer.on('autoUpdateNotification', (event, arg, info) => {
         switch(arg){
             case 'checking-for-update':
                 loggerAutoUpdater.info('Checking for update..')
-                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkingForUpdateButton'), true)
+                safeSettingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkingForUpdateButton'), true)
                 break
             case 'update-available':
                 loggerAutoUpdater.info('New update available', info.version)
@@ -51,11 +67,11 @@ if(!isDev){
                     info.darwindownload = `https://github.com/60zz/SSMPLauncher/releases/download/v${info.version}/SSMP-Launcher-setup-${info.version}${process.arch === 'arm64' ? '-arm64' : '-x64'}.dmg`
                 }
                 
-                populateSettingsUpdateInformation(info)
+                safePopulateSettingsUpdateInformation(info)
                 break
             case 'update-downloaded':
                 loggerAutoUpdater.info('Update ' + info.version + ' ready to be installed.')
-                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.installNowButton'), false, () => {
+                safeSettingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.installNowButton'), false, () => {
                     if(!isDev){
                         ipcRenderer.send('autoUpdateAction', 'installUpdateNow')
                     }
@@ -63,7 +79,7 @@ if(!isDev){
                 break
             case 'update-not-available':
                 loggerAutoUpdater.info('No new update found.')
-                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'))
+                safeSettingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'))
                 break
             case 'ready':
                 updateCheckListener = setInterval(() => {

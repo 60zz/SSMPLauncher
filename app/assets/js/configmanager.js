@@ -64,13 +64,38 @@ exports.getAbsoluteMaxRAM = function(){
     return Math.floor(mem / 1073741824)
 }
 
+
+function normalizeJvmMemory(memory){
+    if(typeof memory === 'number'){
+        return `${Math.max(1, Math.round(memory))}M`
+    }
+
+    if(typeof memory !== 'string'){
+        return memory
+    }
+
+    const trimmed = memory.trim()
+    const match = trimmed.match(/^(\d+(?:\.\d+)?)([mMgG])$/)
+    if(match == null){
+        return trimmed
+    }
+
+    const value = Number(match[1])
+    if(!Number.isFinite(value)){
+        return trimmed
+    }
+
+    const multiplier = match[2].toUpperCase() === 'G' ? 1024 : 1
+    return `${Math.max(1, Math.round(value * multiplier))}M`
+}
+
 function resolveSelectedRAM(ram) {
     if(ram?.recommended != null) {
-        return `${ram.recommended}M`
+        return normalizeJvmMemory(`${ram.recommended}M`)
     } else {
         // Legacy behavior
         const mem = os.totalmem()
-        return mem >= (8*1073741824) ? '4G' : (mem >= (6*1073741824) ? '3G' : '2G')
+        return mem >= (8*1073741824) ? '4096M' : (mem >= (6*1073741824) ? '3072M' : '2048M')
     }
 }
 
@@ -588,7 +613,7 @@ exports.ensureJavaConfig = function(serverid, effectiveJavaOptions, ram) {
  * @returns {string} The minimum amount of memory for JVM initialization.
  */
 exports.getMinRAM = function(serverid){
-    return config.javaConfig[serverid].minRAM
+    return normalizeJvmMemory(config.javaConfig[serverid].minRAM)
 }
 
 /**
@@ -600,7 +625,7 @@ exports.getMinRAM = function(serverid){
  * @param {string} minRAM The new minimum amount of memory for JVM initialization.
  */
 exports.setMinRAM = function(serverid, minRAM){
-    config.javaConfig[serverid].minRAM = minRAM
+    config.javaConfig[serverid].minRAM = normalizeJvmMemory(minRAM)
 }
 
 /**
@@ -612,7 +637,7 @@ exports.setMinRAM = function(serverid, minRAM){
  * @returns {string} The maximum amount of memory for JVM initialization.
  */
 exports.getMaxRAM = function(serverid){
-    return config.javaConfig[serverid].maxRAM
+    config.javaConfig[serverid].minRAM = normalizeJvmMemory(minRAM)
 }
 
 /**

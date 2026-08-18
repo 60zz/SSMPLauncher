@@ -13,10 +13,11 @@
 // Requirements
 const ConfigManager          = require('./configmanager')
 const { LoggerUtil }         = require('hasta-core')
-const { RestResponseStatus } = require('hasta-core/common')
+const { RestResponseStatus, isDisplayableError } = require('hasta-core/common')
 const { MojangRestAPI, MojangErrorCode } = require('hasta-core/mojang')
 const { MicrosoftAuth, MicrosoftErrorCode } = require('hasta-core/microsoft')
 const { AZURE_CLIENT_ID }    = require('./ipcconstants')
+const LangLoader             = require('./langloader')
 const uuid = require('uuid')
 const crypto = require('crypto')
 
@@ -24,33 +25,20 @@ const crypto = require('crypto')
 const log = LoggerUtil.getLogger('AuthManager')
 
 // Functions
-function microsoftErrorDisplayable(errorCode) {
-    switch(errorCode) {
+
+function microsoftErrorDisplayable(errorCode){
+    switch(errorCode){
         case MicrosoftErrorCode.NO_PROFILE:
-            return {
-                title: 'Minecraft profile not found',
-                desc: 'This Microsoft account does not own Minecraft: Java Edition, or a Minecraft profile has not been created for it yet.'
-            }
+            return LangLoader.queryJS('auth.microsoft.error.noProfile')
         case MicrosoftErrorCode.NO_XBOX_ACCOUNT:
-            return {
-                title: 'Xbox account not found',
-                desc: 'This Microsoft account does not have an Xbox profile. Create one, then try signing in again.'
-            }
+            return LangLoader.queryJS('auth.microsoft.error.noXboxAccount')
         case MicrosoftErrorCode.XBL_BANNED:
-            return {
-                title: 'Xbox account unavailable',
-                desc: 'This Xbox account is banned or otherwise unavailable for authentication.'
-            }
+            return LangLoader.queryJS('auth.microsoft.error.xblBanned')
         case MicrosoftErrorCode.UNDER_18:
-            return {
-                title: 'Account needs adult approval',
-                desc: 'This account is under 18 and must be added to a Microsoft Family by an adult before it can sign in.'
-            }
+            return LangLoader.queryJS('auth.microsoft.error.under18')
+        case MicrosoftErrorCode.UNKNOWN:
         default:
-            return {
-                title: 'Microsoft login failed',
-                desc: 'Microsoft rejected the login attempt. Please close the login window and try again.'
-            }
+            return LangLoader.queryJS('auth.microsoft.error.unknown')
     }
 }
 
@@ -138,6 +126,9 @@ async function fullMicrosoftAuthFlow(entryCode, authMode) {
         }
     } catch(err) {
         log.error(err)
+        if(isDisplayableError(err)) {
+            return Promise.reject(err)
+        }
         return Promise.reject(microsoftErrorDisplayable(MicrosoftErrorCode.UNKNOWN))
     }
 }

@@ -232,11 +232,7 @@ function saveSettingsValues(){
                     // Special Conditions
                     if(cVal === 'MinRAM' || cVal === 'MaxRAM'){
                         let val = Number(v.getAttribute('value'))
-                        if(val%1 > 0){
-                            val = val*1024 + 'M'
-                        } else {
-                            val = val + 'G'
-                        }
+                        val = Math.max(1, Math.round(val * 1024)) + 'M'
 
                         sFnOpts.push(val)
                         sFn.apply(null, sFnOpts)
@@ -669,9 +665,9 @@ async function populateAuthAccounts() {
     const authAccounts = ConfigManager.getAuthAccounts()
     const authKeys = Object.keys(authAccounts)
     if (authKeys.length === 0) {
-        return
+        return { microsoftAuthAccountStr: '', mojangAuthAccountStr: '' }
     }
-    const selectedUUID = ConfigManager.getSelectedAccount().uuid
+    const selectedUUID = ConfigManager.getSelectedAccount()?.uuid
 
     let microsoftAuthAccountStr = ''
     let mojangAuthAccountStr = ''
