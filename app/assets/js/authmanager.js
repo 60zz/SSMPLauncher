@@ -24,6 +24,35 @@ const crypto = require('crypto')
 const log = LoggerUtil.getLogger('AuthManager')
 
 // Functions
+function microsoftErrorDisplayable(errorCode) {
+    switch(errorCode) {
+        case MicrosoftErrorCode.NO_PROFILE:
+            return {
+                title: 'Minecraft profile not found',
+                desc: 'This Microsoft account does not own Minecraft: Java Edition, or a Minecraft profile has not been created for it yet.'
+            }
+        case MicrosoftErrorCode.NO_XBOX_ACCOUNT:
+            return {
+                title: 'Xbox account not found',
+                desc: 'This Microsoft account does not have an Xbox profile. Create one, then try signing in again.'
+            }
+        case MicrosoftErrorCode.XBL_BANNED:
+            return {
+                title: 'Xbox account unavailable',
+                desc: 'This Xbox account is banned or otherwise unavailable for authentication.'
+            }
+        case MicrosoftErrorCode.UNDER_18:
+            return {
+                title: 'Account needs adult approval',
+                desc: 'This account is under 18 and must be added to a Microsoft Family by an adult before it can sign in.'
+            }
+        default:
+            return {
+                title: 'Microsoft login failed',
+                desc: 'Microsoft rejected the login attempt. Please close the login window and try again.'
+            }
+    }
+}
 
 /**
  * Add a Mojang account. This will authenticate the given username with Mojang's

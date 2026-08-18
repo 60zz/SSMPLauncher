@@ -19,13 +19,8 @@ const api = new DistributionAPI(
 
 const LEGACY_COMMON_MODSTORE = 'modstore'
 const DISTRO_CACHE_TTL_MS = 30 * 60 * 1000
-const DISTRO_REFRESH_JITTER_MS = 5000
 
 let distroRefreshPromise = null
-
-function wait(ms){
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
 
 async function isDistributionCacheFresh(){
     if(api.isDevMode()){
@@ -185,11 +180,11 @@ api.refreshDistributionOrFallback = async function(){
 
 const getDistribution = api.getDistribution.bind(api)
 api.getDistribution = async function(){
-        if(this.rawDistribution == null && await isDistributionCacheFresh()){
+    if(this.rawDistribution == null){
         try {
             return useInstanceModStores(await this.getDistributionLocalLoadOnly())
         } catch {
-            // Cache exists but is unreadable; fall back to the normal remote/local path.
+            // Local distribution is unavailable or unreadable; fall back to the normal remote/local path.
         }
     }
 
