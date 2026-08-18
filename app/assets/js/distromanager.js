@@ -1,5 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
+const got = require('got')
 const { DistributionAPI } = require('hasta-core/common')
 const { Type } = require('helios-distribution-types')
 
