@@ -44,18 +44,39 @@ function onDistroLoad(data){
 }
 
 // Ensure Distribution is downloaded and cached.
-DistroAPI.getDistribution()
-    .then(heliosDistro => {
-        logger.info('Loaded distribution index.')
+function refreshDistributionInBackground(){
+    DistroAPI.refreshDistributionOrFallback()
+        .then(heliosDistro => {
+            if(heliosDistro != null){
+                logger.info('Distribution index refreshed in background.')
+                ipcRenderer.send('distributionIndexRefreshed')
+            }
+        })
+        .catch(err => {
+            logger.warn('Failed to refresh the distribution index in background.', err)
+        })
+}
 
+// Load the cached distribution first so the UI is not blocked by a slow network request.
+DistroAPI.getDistributionLocalLoadOnly()
+    .then(heliosDistro => {
+        logger.info('Loaded cached distribution index.')
         onDistroLoad(heliosDistro)
     })
-    .catch(err => {
-        logger.info('Failed to load an older version of the distribution index.')
-        logger.info('Application cannot run.')
-        logger.error(err)
+    .catch(localErr => {
+        logger.warn('Failed to load cached distribution index, falling back to remote load.', localErr)
+        DistroAPI.refreshDistributionOrFallback()
+            .then(heliosDistro => {
+                logger.info('Loaded distribution index from remote or fallback.')
+                onDistroLoad(heliosDistro)
+            })
+            .catch(err => {
+                logger.info('Failed to load an older version of the distribution index.')
+                logger.info('Application cannot run.')
+                logger.error(err)
 
-        onDistroLoad(null)
+                onDistroLoad(null)
+            })
     })
 
 // Clean up temp dir incase previous launches ended unexpectedly. 

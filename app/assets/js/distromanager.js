@@ -19,6 +19,12 @@ const api = new DistributionAPI(
 
 const LEGACY_COMMON_MODSTORE = 'modstore'
 const DISTRO_CACHE_TTL_MS = 30 * 60 * 1000
+const DISTRO_REFRESH_JITTER_MS = 1500
+const DISTRO_REMOTE_TIMEOUT_MS = 5000
+
+function wait(ms){
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
 
 let distroRefreshPromise = null
 
@@ -157,6 +163,27 @@ async function cleanLegacyCommonModStore(){
         await fs.remove(legacyRoot)
     } catch {
         // Cleanup is best-effort. Launching should not fail if Windows keeps a file locked.
+    }
+}
+
+api.pullRemote = async function(){
+    try {
+        const res = await got.get(this.remoteUrl, {
+            responseType: 'json',
+            timeout: {
+                request: DISTRO_REMOTE_TIMEOUT_MS
+            }
+        })
+        return {
+            data: res.body,
+            responseStatus: 'SUCCESS'
+        }
+    } catch(error) {
+        return {
+            data: null,
+            responseStatus: 'ERROR',
+            error
+        }
     }
 }
 

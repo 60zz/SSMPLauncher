@@ -435,6 +435,15 @@ document.addEventListener('readystatechange', async () => {
 
 }, false)
 
+ipcRenderer.on('distributionIndexRefreshed', async () => {
+    if(fatalStartupError){
+        return
+    }
+
+    const data = await DistroAPI.getDistribution()
+    onDistroRefresh(data)
+})
+
 // Actions that must be performed after the distribution index is downloaded.
 ipcRenderer.on('distributionIndexDone', async (event, res) => {
     if(res) {
