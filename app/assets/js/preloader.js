@@ -1,3 +1,4 @@
+/* global document */
 const {ipcRenderer}  = require('electron')
 const fs             = require('fs-extra')
 const os             = require('os')
@@ -30,6 +31,19 @@ LangLoader.setupLanguage(launcherDir)
  * 
  * @param {HeliosDistribution} data 
  */
+function sendDistributionIndexDone(success){
+    const send = () => ipcRenderer.send('distributionIndexDone', success)
+
+    if(document.readyState === 'loading'){
+        document.addEventListener('readystatechange', () => {
+            if(document.readyState === 'interactive' || document.readyState === 'complete'){
+                send()
+            }
+        }, { once: true })
+    } else {
+        send()
+    }
+}
 function onDistroLoad(data){
     if(data != null){
         
@@ -40,7 +54,7 @@ function onDistroLoad(data){
             ConfigManager.save()
         }
     }
-    ipcRenderer.send('distributionIndexDone', data != null)
+    sendDistributionIndexDone(data != null)
 }
 
 // Ensure Distribution is downloaded and cached.
@@ -61,7 +75,7 @@ function refreshDistributionInBackground(){
 DistroAPI.getDistributionLocalLoadOnly()
     .then(heliosDistro => {
         logger.info('Loaded cached distribution index.')
-        onDistroLoad(heliosDistro)
+        refreshDistributionInBackground()
     })
     .catch(localErr => {
         logger.warn('Failed to load cached distribution index, falling back to remote load.', localErr)
